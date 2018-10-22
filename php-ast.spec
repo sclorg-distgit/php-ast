@@ -1,3 +1,5 @@
+# centos/sclo spec file for php-ast, from:
+#
 # remirepo spec file for php-ast
 #
 # Copyright (c) 2015-2018 Remi Collet
@@ -6,34 +8,31 @@
 #
 # Please, preserve the changelog entries
 #
-%{?scl:          %scl_package         php-ast}
+%if 0%{?scl:1}
+%global sub_prefix sclo-%{scl_prefix}
+%if "%{scl}" == "rh-php70"
+%global sub_prefix sclo-php70-
+%endif
+%if "%{scl}" == "rh-php71"
+%global sub_prefix sclo-php71-
+%endif
+%if "%{scl}" == "rh-php72"
+%global sub_prefix sclo-php72-
+%endif
+%scl_package       php-ast
+%endif
 
-%global gh_commit   701e8539e0a861b8fe3c0144a7554c376f42efe3
-%global gh_short    %(c=%{gh_commit}; echo ${c:0:7})
-%global gh_owner    nikic
-%global gh_project  php-ast
-#global gh_date     20160608
 %global pecl_name   ast
-%global with_zts    0%{!?_without_zts:%{?__ztsphp:1}}
 # After 20-tokenizer.ini
 %global ini_name    40-%{pecl_name}.ini
 
 Summary:       Abstract Syntax Tree
-Name:          %{?scl_prefix}php-ast
+Name:          %{?sub_prefix}php-ast
 Version:       1.0.0
-%if 0%{?gh_date:1}
-Release:       0.5.%{gh_date}git%{gh_short}%{?dist}%{!?scl:%{!?nophptag:%(%{__php} -r 'echo ".".PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')}}
-%else
 Release:       1%{?dist}%{!?scl:%{!?nophptag:%(%{__php} -r 'echo ".".PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')}}
-%endif
 License:       BSD
-Group:         Development/Languages
 URL:           https://github.com/%{gh_owner}/%{gh_project}
-%if 0%{?gh_date}
-Source0:       https://github.com/%{gh_owner}/%{gh_project}/archive/%{gh_commit}/%{gh_project}-%{version}-%{gh_short}.tar.gz
-%else
 Source0:       http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
-%endif
 
 BuildRequires: %{?dtsprefix}gcc
 BuildRequires: %{?scl_prefix}php-devel > 7
@@ -43,7 +42,6 @@ BuildRequires: %{?scl_prefix}php-tokenizer
 Requires:      %{?scl_prefix}php(zend-abi) = %{php_zend_api}
 Requires:      %{?scl_prefix}php(api) = %{php_core_api}
 Requires:      %{?scl_prefix}php-tokenizer%{?_isa}
-%{?_sclreq:Requires: %{?scl_prefix}runtime%{?_sclreq}%{?_isa}}
 
 %if "%{?scl_prefix}" != "%{?sub_prefix}"
 Provides:       %{?scl_prefix}php-%{pecl_name}               = %{version}-%{release}
@@ -55,30 +53,6 @@ Provides:       %{?scl_prefix}php-pecl-%{pecl_name}%{?_isa}  = %{version}-%{rele
 Provides:       %{?scl_prefix}php-pecl(%{pecl_name})         = %{version}
 Provides:       %{?scl_prefix}php-pecl(%{pecl_name})%{?_isa} = %{version}
 
-%if "%{?vendor}" == "Remi Collet" && 0%{!?scl:1} && 0%{?rhel}
-Obsoletes:     php70u-%{pecl_name}      <= %{version}
-Obsoletes:     php70u-pecl-%{pecl_name} <= %{version}
-Obsoletes:     php70w-%{pecl_name}      <= %{version}
-Obsoletes:     php70w-pecl-%{pecl_name} <= %{version}
-%if "%{php_version}" > "7.1"
-Obsoletes:     php71u-%{pecl_name}      <= %{version}
-Obsoletes:     php71u-pecl-%{pecl_name} <= %{version}
-Obsoletes:     php71w-%{pecl_name}      <= %{version}
-Obsoletes:     php71w-pecl-%{pecl_name} <= %{version}
-%endif
-%if "%{php_version}" > "7.2"
-Obsoletes:     php72u-%{pecl_name}      <= %{version}
-Obsoletes:     php72u-pecl-%{pecl_name} <= %{version}
-Obsoletes:     php72w-%{pecl_name}      <= %{version}
-Obsoletes:     php72w-pecl-%{pecl_name} <= %{version}
-%endif
-%if "%{php_version}" > "7.3"
-Obsoletes:     php73u-%{pecl_name}      <= %{version}
-Obsoletes:     php73u-pecl-%{pecl_name} <= %{version}
-Obsoletes:     php73w-%{pecl_name}      <= %{version}
-Obsoletes:     php73w-pecl-%{pecl_name} <= %{version}
-%endif
-%endif
 
 %if 0%{?fedora} < 20 && 0%{?rhel} < 7
 # Filter shared private
@@ -95,12 +69,7 @@ Package built for PHP %(%{__php} -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSIO
 
 %prep
 %setup -qc
-%if 0%{?gh_date}
-mv %{gh_project}-%{gh_commit} NTS
-mv NTS/package.xml .
-%else
 mv %{pecl_name}-%{version}%{?prever} NTS
-%endif
 
 # Don't install/register tests
 sed -e 's/role="test"/role="src"/' \
@@ -116,11 +85,6 @@ if test "x${extver}" != "x%{version}%{?gh_date:-dev}"; then
    exit 1
 fi
 cd ..
-
-%if %{with_zts}
-# duplicate for ZTS build
-cp -pr NTS ZTS
-%endif
 
 # Drop in the bit of configuration
 cat << 'EOF' | tee %{ini_name}
@@ -139,15 +103,6 @@ cd NTS
     --enable-ast
 make %{?_smp_mflags}
 
-%if %{with_zts}
-cd ../ZTS
-%{_bindir}/zts-phpize
-%configure \
-    --with-php-config=%{_bindir}/zts-php-config \
-    --enable-ast
-make %{?_smp_mflags}
-%endif
-
 
 %install
 %{?dtsenable}
@@ -158,12 +113,6 @@ install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 # Install the NTS stuff
 make -C NTS install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
-
-%if %{with_zts}
-# Install the ZTS stuff
-make -C ZTS install INSTALL_ROOT=%{buildroot}
-install -D -m 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
-%endif
 
 # Documentation
 for i in $(grep 'role="doc"' package.xml | sed -e 's/^.*name="//;s/".*$//')
@@ -186,20 +135,23 @@ NO_INTERACTION=1 \
 REPORT_EXIT_STATUS=1 \
 %{__php} -n run-tests.php --show-diff
 
-%if %{with_zts}
-cd ../ZTS
-: Minimal load test for ZTS extension
-%{__ztsphp} --no-php-ini \
-    --define extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so \
-    --modules | grep %{pecl_name}
 
-: Upstream test suite  for ZTS extension
-TEST_PHP_EXECUTABLE=%{__ztsphp} \
-TEST_PHP_ARGS="-n -d extension=tokenizer.so -d extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so" \
-NO_INTERACTION=1 \
-REPORT_EXIT_STATUS=1 \
-%{__ztsphp} -n run-tests.php --show-diff
-%endif
+# when pear installed alone, after us
+%triggerin -- %{?scl_prefix}php-pear
+if [ -x %{__pecl} ] ; then
+    %{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
+fi
+
+# posttrans as pear can be installed after us
+%posttrans
+if [ -x %{__pecl} ] ; then
+    %{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
+fi
+
+%postun
+if [ $1 -eq 0 -a -x %{__pecl} ] ; then
+    %{pecl_uninstall} %{pecl_name} >/dev/null || :
+fi
 
 
 %files
@@ -210,15 +162,11 @@ REPORT_EXIT_STATUS=1 \
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 
-%if %{with_zts}
-%config(noreplace) %{php_ztsinidir}/%{ini_name}
-%{php_ztsextdir}/%{pecl_name}.so
-%endif
-
 
 %changelog
 * Mon Oct 22 2018 Remi Collet <remi@remirepo.net> - 1.0.0-1
 - update to 1.0.0
+- cleanup for SCLo build
 
 * Sun Oct  7 2018 Remi Collet <remi@remirepo.net> - 0.1.7-1
 - update to 0.1.7
