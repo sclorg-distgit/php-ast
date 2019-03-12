@@ -2,7 +2,7 @@
 #
 # remirepo spec file for php-ast
 #
-# Copyright (c) 2015-2018 Remi Collet
+# Copyright (c) 2015-2019 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
@@ -28,7 +28,7 @@
 
 Summary:       Abstract Syntax Tree
 Name:          %{?sub_prefix}php-ast
-Version:       1.0.0
+Version:       1.0.1
 Release:       1%{?dist}%{!?scl:%{!?nophptag:%(%{__php} -r 'echo ".".PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')}}
 License:       BSD
 URL:           https://github.com/%{gh_owner}/%{gh_project}
@@ -164,6 +164,9 @@ fi
 
 
 %changelog
+* Tue Mar 12 2019 Remi Collet <remi@remirepo.net> - 1.0.1-1
+- update to 1.0.1
+
 * Mon Oct 22 2018 Remi Collet <remi@remirepo.net> - 1.0.0-1
 - update to 1.0.0
 - cleanup for SCLo build
