@@ -31,7 +31,7 @@
 
 Summary:       Abstract Syntax Tree
 Name:          %{?sub_prefix}php-ast
-Version:       1.0.2
+Version:       1.0.3
 Release:       1%{?dist}%{!?scl:%{!?nophptag:%(%{__php} -r 'echo ".".PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')}}
 License:       BSD
 URL:           https://github.com/%{gh_owner}/%{gh_project}
@@ -167,6 +167,9 @@ fi
 
 
 %changelog
+* Tue Jul 30 2019 Remi Collet <remi@remirepo.net> - 1.0.3-1
+- update to 1.0.3
+
 * Mon Jul  1 2019 Remi Collet <remi@remirepo.net> - 1.0.2-1
 - update to 1.0.2
 
