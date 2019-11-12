@@ -10,12 +10,6 @@
 #
 %if 0%{?scl:1}
 %global sub_prefix sclo-%{scl_prefix}
-%if "%{scl}" == "rh-php70"
-%global sub_prefix sclo-php70-
-%endif
-%if "%{scl}" == "rh-php71"
-%global sub_prefix sclo-php71-
-%endif
 %if "%{scl}" == "rh-php72"
 %global sub_prefix sclo-php72-
 %endif
@@ -31,7 +25,7 @@
 
 Summary:       Abstract Syntax Tree
 Name:          %{?sub_prefix}php-ast
-Version:       1.0.3
+Version:       1.0.4
 Release:       1%{?dist}%{!?scl:%{!?nophptag:%(%{__php} -r 'echo ".".PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')}}
 License:       BSD
 URL:           https://github.com/%{gh_owner}/%{gh_project}
@@ -167,6 +161,9 @@ fi
 
 
 %changelog
+* Tue Nov 12 2019 Remi Collet <remi@remirepo.net> - 1.0.4-1
+- update to 1.0.4
+
 * Tue Jul 30 2019 Remi Collet <remi@remirepo.net> - 1.0.3-1
 - update to 1.0.3
 
