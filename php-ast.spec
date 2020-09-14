@@ -25,11 +25,11 @@
 
 Summary:       Abstract Syntax Tree
 Name:          %{?sub_prefix}php-ast
-Version:       1.0.8
+Version:       1.0.10
 Release:       1%{?dist}%{!?scl:%{!?nophptag:%(%{__php} -r 'echo ".".PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')}}
 License:       BSD
 URL:           https://github.com/%{gh_owner}/%{gh_project}
-Source0:       http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
+Source0:       https://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
 BuildRequires: %{?dtsprefix}gcc
 BuildRequires: %{?scl_prefix}php-devel > 7
@@ -161,6 +161,9 @@ fi
 
 
 %changelog
+* Mon Sep 14 2020 Remi Collet <remi@remirepo.net> - 1.0.10-1
+- update to 1.0.10
+
 * Mon Aug 10 2020 Remi Collet <remi@remirepo.net> - 1.0.8-1
 - update to 1.0.8
 
